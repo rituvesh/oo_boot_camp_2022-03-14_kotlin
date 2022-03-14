@@ -6,9 +6,13 @@
 
 package com.nrkei.training.oo.probability
 
+import kotlin.math.absoluteValue
+import kotlin.math.roundToLong
+
 // Understands the likelihood of something specific occurring
 class Chance(likelihoodAsFraction: Number) {
     companion object {
+        private const val EPSILON = 1e-10
         private const val CERTAIN_FRACTION = 1.0
     }
 
@@ -16,9 +20,9 @@ class Chance(likelihoodAsFraction: Number) {
 
     override fun equals(other: Any?) = this === other || other is Chance && this.equals(other)
 
-    private fun equals(other: Chance) = this.fraction == other.fraction
+    private fun equals(other: Chance) = (this.fraction - other.fraction).absoluteValue < EPSILON
 
-    override fun hashCode() = fraction.hashCode()
+    override fun hashCode() = (fraction / EPSILON).roundToLong().hashCode()
 
     operator fun not() = Chance(CERTAIN_FRACTION - fraction)
 }
