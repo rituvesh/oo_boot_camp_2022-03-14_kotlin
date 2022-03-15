@@ -9,6 +9,7 @@ package com.nrkei.training.oo.unit
 import com.nrkei.training.oo.probability.Chance
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class ChanceTest {
 
@@ -62,5 +63,10 @@ internal class ChanceTest {
         assertEquals(LIKELY or UNLIKELY, UNLIKELY or LIKELY)
         assertEquals(LIKELY, LIKELY or IMPOSSIBLE)
         assertEquals(CERTAIN, CERTAIN or LIKELY)
+    }
+
+    @Test internal fun `invalid fractions`() {
+        assertThrows<IllegalArgumentException> { Chance(-0.01) }
+        assertThrows<IllegalArgumentException> { Chance(1.01) }
     }
 }
