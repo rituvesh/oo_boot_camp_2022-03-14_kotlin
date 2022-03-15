@@ -6,9 +6,13 @@
 
 package com.nrkei.training.oo.quantity
 
+import kotlin.math.roundToLong
+
 class Unit {
 
     companion object {
+        internal const val EPSILON = 1e-10
+
         private val TEASPOON = Unit()
         private val TABLESPOON = Unit(3, TEASPOON)
         private val OUNCE = Unit(2, TABLESPOON)
@@ -45,9 +49,15 @@ class Unit {
 
         private val CELSIUS = Unit()
         private val FAHRENHEIT = Unit(5/9.0, 32, CELSIUS)
+        private val GAS_MARK = Unit(125/9.0, -218.0/25, CELSIUS)
+        private val KELVIN = Unit(1, 273.15, CELSIUS)
+        private val RANKINE = Unit(5/9.0, 491.67, CELSIUS)
 
         val Number.celsius get() = IntervalQuantity(this, CELSIUS)
         val Number.fahrenheit get() = IntervalQuantity(this, FAHRENHEIT)
+        val Number.gasMark get() = IntervalQuantity(this, GAS_MARK)
+        val Number.kelvin get() = IntervalQuantity(this, KELVIN)
+        val Number.rankine get() = IntervalQuantity(this, RANKINE)
     }
 
     private val baseUnit: Unit
@@ -74,7 +84,8 @@ class Unit {
             require(this.isCompatible(other)) { "Units are not compatible" }
         }
 
-    internal fun hashCode(amount: Double) = ((amount - offset) * baseUnitRatio).hashCode()
+    internal fun hashCode(amount: Double) =
+        ((amount - offset) * baseUnitRatio / EPSILON).roundToLong().hashCode()
 
     internal fun isCompatible(other: Unit) = this.baseUnit == other.baseUnit
 }
