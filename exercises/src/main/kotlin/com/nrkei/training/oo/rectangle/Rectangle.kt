@@ -11,6 +11,10 @@ class Rectangle(length: Number, width: Number) {
     private val length = length.toDouble()
     private val width = width.toDouble()
 
+    companion object {
+        fun square(side: Number) = Rectangle(side, side)
+    }
+
     init {
         require(this.length > 0.0 && this.width > 0.0)
         { "Each Rectangle dimension must be greater than zero" }
