@@ -6,7 +6,7 @@
 
 package com.nrkei.training.oo.unit
 
-import com.nrkei.training.oo.quantity.Quantity
+import com.nrkei.training.oo.quantity.IntervalQuantity
 import com.nrkei.training.oo.quantity.Unit.Companion.celsius
 import com.nrkei.training.oo.quantity.Unit.Companion.chains
 import com.nrkei.training.oo.quantity.Unit.Companion.cups
@@ -59,6 +59,7 @@ internal class QuantityTest {
         assertEquals(50.fahrenheit.hashCode(), 10.celsius.hashCode())
     }
 
+    @Suppress("WrapUnaryOperator")
     @Test fun arithmetic() {
         assertEquals(0.5.quarts, +6.tablespoons + 13.ounces)
         assertEquals((-6).tablespoons, -6.tablespoons)
@@ -82,7 +83,13 @@ internal class QuantityTest {
         assertBidirectionalEquality((-40).celsius, (-40).fahrenheit)
     }
 
-    private fun assertBidirectionalEquality(left: Quantity, right: Quantity) {
+    @Test
+    internal fun temperatureArithmetic() {
+        // The following should not compile!
+//        10.celsius - 32.fahrenheit
+    }
+
+    private fun assertBidirectionalEquality(left: IntervalQuantity, right: IntervalQuantity) {
         assertEquals(left, right)
         assertEquals(right, left)
     }
