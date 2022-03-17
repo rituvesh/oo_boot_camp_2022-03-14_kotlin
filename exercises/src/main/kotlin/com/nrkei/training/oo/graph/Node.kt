@@ -6,24 +6,21 @@
 
 package com.nrkei.training.oo.graph
 
-import com.nrkei.training.oo.graph.Link.Companion.FEWEST_HOPS
 import com.nrkei.training.oo.graph.Path.ActualPath
 
 // Understands its neighbors
 class Node {
-    companion object {
-        private const val UNREACHABLE = Double.POSITIVE_INFINITY
-    }
-
     private val links = mutableListOf<Link>()
 
     infix fun canReach(destination: Node) = this.path(destination, noVisitedNodes, Path::cost) is ActualPath
 
-    infix fun hopCount(destination: Node) = this.cost(destination, FEWEST_HOPS).toInt()
+    infix fun hopCount(destination: Node) = this.path(destination, Path::hopCount).hopCount()
 
     infix fun cost(destination: Node) = path(destination).cost()
 
-    infix fun path(destination: Node) = this.path(destination, noVisitedNodes, Path::cost).also {
+    infix fun path(destination: Node) = this.path(destination, Path::cost)
+
+    private fun path(destination: Node, strategy: PathStrategy) = this.path(destination, noVisitedNodes, strategy).also {
         require(it is ActualPath) { "Destination cannot be reached" }
     }
 
@@ -34,19 +31,6 @@ class Node {
             .map { link -> link.path(destination, visitedNodes + this, strategy) }
             .minByOrNull { strategy(it).toDouble() }
             ?: Path.None
-    }
-
-    private fun cost(destination: Node, strategy: CostStrategy) =
-        this.cost(destination, noVisitedNodes, strategy).also {
-            require(it != UNREACHABLE) { "Destination cannot be reached" }
-        }
-
-    internal fun cost(destination: Node, visitedNodes: List<Node>, strategy: CostStrategy): Double {
-        if (this == destination) return 0.0
-        if (this in visitedNodes) return UNREACHABLE
-        return links
-            .minOfOrNull { link -> link.cost(destination, visitedNodes + this, strategy) }
-            ?: UNREACHABLE
     }
 
     private val noVisitedNodes = emptyList<Node>()
