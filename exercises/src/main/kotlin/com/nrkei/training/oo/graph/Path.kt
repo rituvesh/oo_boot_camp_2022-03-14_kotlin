@@ -19,4 +19,9 @@ abstract class Path internal constructor() {
 
         override fun hopCount() = links.size
     }
+
+    internal object None: Path() {
+        override fun cost() = Double.POSITIVE_INFINITY
+        override fun hopCount() = Int.MAX_VALUE
+    }
 }
