@@ -8,6 +8,7 @@ package com.nrkei.training.oo.graph
 
 import com.nrkei.training.oo.graph.Link.Companion.FEWEST_HOPS
 import com.nrkei.training.oo.graph.Link.Companion.LEAST_COST
+import com.nrkei.training.oo.graph.Path.ActualPath
 
 // Understands its neighbors
 class Node {
@@ -27,7 +28,7 @@ class Node {
         ?: throw IllegalArgumentException("Destination cannot be reached")
 
     internal fun path(destination: Node, visitedNodes: List<Node>): Path? {
-        if (this == destination) return Path()
+        if (this == destination) return ActualPath()
         if (this in visitedNodes) return null
         return links
             .mapNotNull { link -> link.path(destination, visitedNodes + this) }
