@@ -9,6 +9,7 @@ package com.nrkei.training.oo.graph
 import com.nrkei.training.oo.graph.Link.Companion.FEWEST_HOPS
 import com.nrkei.training.oo.graph.Link.Companion.LEAST_COST
 
+// Understands its neighbors
 class Node {
     companion object {
         private const val UNREACHABLE = Double.POSITIVE_INFINITY
@@ -21,6 +22,17 @@ class Node {
     infix fun hopCount(destination: Node) = this.cost(destination, FEWEST_HOPS).toInt()
 
     infix fun cost(destination: Node) = cost(destination, LEAST_COST)
+
+    infix fun path(destination: Node) = this.path(destination, noVisitedNodes)
+        ?: throw IllegalArgumentException("Destination cannot be reached")
+
+    internal fun path(destination: Node, visitedNodes: List<Node>): Path? {
+        if (this == destination) return Path()
+        if (this in visitedNodes) return null
+        return links
+            .mapNotNull { link -> link.path(destination, visitedNodes + this) }
+            .minByOrNull { it.cost() }
+    }
 
     private fun cost(destination: Node, strategy: CostStrategy) =
         this.cost(destination, noVisitedNodes, strategy).also {
