@@ -18,13 +18,14 @@ class Node {
 
     infix fun canReach(destination: Node) = this.cost(destination, noVisitedNodes, FEWEST_HOPS) != UNREACHABLE
 
-    infix fun hopCount(destination: Node) = this.cost(destination, noVisitedNodes, FEWEST_HOPS).also {
-        require(it != UNREACHABLE) { "Destination cannot be reached" }
-    }.toInt()
+    infix fun hopCount(destination: Node) = this.cost(destination, FEWEST_HOPS).toInt()
 
-    infix fun cost(destination: Node) = this.cost(destination, noVisitedNodes, LEAST_COST).also {
-        require(it != UNREACHABLE) { "Destination cannot be reached" }
-    }
+    infix fun cost(destination: Node) = cost(destination, LEAST_COST)
+
+    private fun cost(destination: Node, strategy: CostStrategy) =
+        this.cost(destination, noVisitedNodes, strategy).also {
+            require(it != UNREACHABLE) { "Destination cannot be reached" }
+        }
 
     internal fun cost(destination: Node, visitedNodes: List<Node>, strategy: CostStrategy): Double {
         if (this == destination) return 0.0
@@ -39,6 +40,6 @@ class Node {
     infix fun cost(amount: Number) = LinkBuilder(amount.toDouble(), links)
 
     class LinkBuilder internal constructor(private val cost: Double, private val links: MutableList<Link>) {
-        infix fun to(neighbor: Node) = neighbor.also { links.add(Link(cost, neighbor))}
+        infix fun to(neighbor: Node) = neighbor.also { links.add(Link(cost, neighbor)) }
     }
 }
