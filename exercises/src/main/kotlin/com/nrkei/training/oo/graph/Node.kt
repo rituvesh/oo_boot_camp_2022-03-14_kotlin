@@ -17,22 +17,22 @@ class Node {
 
     private val links = mutableListOf<Link>()
 
-    infix fun canReach(destination: Node) = this.path(destination, noVisitedNodes) is ActualPath
+    infix fun canReach(destination: Node) = this.path(destination, noVisitedNodes, Path::cost) is ActualPath
 
     infix fun hopCount(destination: Node) = this.cost(destination, FEWEST_HOPS).toInt()
 
     infix fun cost(destination: Node) = path(destination).cost()
 
-    infix fun path(destination: Node) = this.path(destination, noVisitedNodes).also {
+    infix fun path(destination: Node) = this.path(destination, noVisitedNodes, Path::cost).also {
         require(it is ActualPath) { "Destination cannot be reached" }
     }
 
-    internal fun path(destination: Node, visitedNodes: List<Node>): Path {
+    internal fun path(destination: Node, visitedNodes: List<Node>, strategy: PathStrategy): Path {
         if (this == destination) return ActualPath()
         if (this in visitedNodes) return Path.None
         return links
-            .map { link -> link.path(destination, visitedNodes + this) }
-            .minByOrNull { it.cost() }
+            .map { link -> link.path(destination, visitedNodes + this, strategy) }
+            .minByOrNull { strategy(it).toDouble() }
             ?: Path.None
     }
 
