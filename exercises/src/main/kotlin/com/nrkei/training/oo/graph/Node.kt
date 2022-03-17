@@ -18,7 +18,14 @@ class Node {
 
     infix fun path(destination: Node) = this.path(destination, Path::cost)
 
-    infix fun paths(destination: Node) = this.paths(destination,noVisitedNodes)
+    infix fun paths(destination: Node) = this.paths(destination, noVisitedNodes)
+
+    fun paths() = this.paths(noVisitedNodes)
+
+    internal fun paths(visitedNodes: List<Node>): List<Path> {
+        if (this in visitedNodes) return emptyList()
+        return links.flatMap { link -> link.paths(visitedNodes + this) } + Path()
+    }
 
     internal fun paths(destination: Node, visitedNodes: List<Node>): List<Path> {
         if (this == destination) return listOf(Path())
