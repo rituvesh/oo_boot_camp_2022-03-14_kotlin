@@ -7,7 +7,6 @@
 package com.nrkei.training.oo.graph
 
 import com.nrkei.training.oo.graph.Link.Companion.FEWEST_HOPS
-import com.nrkei.training.oo.graph.Link.Companion.LEAST_COST
 import com.nrkei.training.oo.graph.Path.ActualPath
 
 // Understands its neighbors
@@ -18,11 +17,11 @@ class Node {
 
     private val links = mutableListOf<Link>()
 
-    infix fun canReach(destination: Node) = this.cost(destination, noVisitedNodes, FEWEST_HOPS) != UNREACHABLE
+    infix fun canReach(destination: Node) = this.path(destination, noVisitedNodes) is ActualPath
 
     infix fun hopCount(destination: Node) = this.cost(destination, FEWEST_HOPS).toInt()
 
-    infix fun cost(destination: Node) = cost(destination, LEAST_COST)
+    infix fun cost(destination: Node) = path(destination).cost()
 
     infix fun path(destination: Node) = this.path(destination, noVisitedNodes).also {
         require(it is ActualPath) { "Destination cannot be reached" }
