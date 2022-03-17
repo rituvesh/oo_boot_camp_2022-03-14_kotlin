@@ -28,9 +28,9 @@ class Node {
         return links.flatMap { link -> link.paths(destination, visitedNodes + this) }
     }
 
-    private fun path(destination: Node, strategy: PathStrategy) = this.path(destination, noVisitedNodes, strategy).also {
-        require(it is ActualPath) { "Destination cannot be reached" }
-    }
+    private fun path(destination: Node, strategy: PathStrategy) = this.paths(destination)
+        .minByOrNull { strategy(it).toDouble() }
+        ?: throw IllegalArgumentException("Destination cannot be reached")
 
     internal fun path(destination: Node, visitedNodes: List<Node>, strategy: PathStrategy): Path {
         if (this == destination) return ActualPath()
