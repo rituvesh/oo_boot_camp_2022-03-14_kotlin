@@ -6,13 +6,11 @@
 
 package com.nrkei.training.oo.graph
 
-import com.nrkei.training.oo.graph.Path.ActualPath
-
 // Understands its neighbors
 class Node {
     private val links = mutableListOf<Link>()
 
-    infix fun canReach(destination: Node) = this.path(destination, noVisitedNodes, Path::cost) is ActualPath
+    infix fun canReach(destination: Node) = this.paths(destination).isNotEmpty()
 
     infix fun hopCount(destination: Node) = this.path(destination, Path::hopCount).hopCount()
 
@@ -23,7 +21,7 @@ class Node {
     infix fun paths(destination: Node) = this.paths(destination,noVisitedNodes)
 
     internal fun paths(destination: Node, visitedNodes: List<Node>): List<Path> {
-        if (this == destination) return listOf(ActualPath())
+        if (this == destination) return listOf(Path())
         if (this in visitedNodes) return emptyList()
         return links.flatMap { link -> link.paths(destination, visitedNodes + this) }
     }
@@ -31,15 +29,6 @@ class Node {
     private fun path(destination: Node, strategy: PathStrategy) = this.paths(destination)
         .minByOrNull { strategy(it).toDouble() }
         ?: throw IllegalArgumentException("Destination cannot be reached")
-
-    internal fun path(destination: Node, visitedNodes: List<Node>, strategy: PathStrategy): Path {
-        if (this == destination) return ActualPath()
-        if (this in visitedNodes) return Path.None
-        return links
-            .map { link -> link.path(destination, visitedNodes + this, strategy) }
-            .minByOrNull { strategy(it).toDouble() }
-            ?: Path.None
-    }
 
     private val noVisitedNodes = emptyList<Node>()
 
