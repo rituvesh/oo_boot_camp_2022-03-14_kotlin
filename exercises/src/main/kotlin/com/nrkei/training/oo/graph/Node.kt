@@ -6,6 +6,8 @@
 
 package com.nrkei.training.oo.graph
 
+import com.nrkei.training.oo.graph.Link.Companion.LEAST_COST
+
 class Node {
     companion object {
         private const val UNREACHABLE = Double.POSITIVE_INFINITY
@@ -27,15 +29,15 @@ class Node {
             ?: UNREACHABLE
     }
 
-    infix fun cost(destination: Node) = this.cost(destination, noVisitedNodes).also {
+    infix fun cost(destination: Node) = this.cost(destination, noVisitedNodes, LEAST_COST).also {
         require(it != UNREACHABLE) { "Destination cannot be reached" }
     }
 
-    internal fun cost(destination: Node, visitedNodes: List<Node>): Double {
+    internal fun cost(destination: Node, visitedNodes: List<Node>, strategy: CostStrategy): Double {
         if (this == destination) return 0.0
         if (this in visitedNodes) return UNREACHABLE
         return links
-            .minOfOrNull { link -> link.cost(destination, visitedNodes + this) }
+            .minOfOrNull { link -> link.cost(destination, visitedNodes + this, strategy) }
             ?: UNREACHABLE
     }
 
