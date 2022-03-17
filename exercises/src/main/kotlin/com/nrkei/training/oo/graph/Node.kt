@@ -13,8 +13,6 @@ class Node {
 
     private val links = mutableListOf<Link>()
 
-    infix fun to(neighbor: Node) = neighbor.also { links.add(Link(neighbor)) }
-
     infix fun canReach(destination: Node) = this.hopCount(destination, noVisitedNodes) != UNREACHABLE
 
     infix fun hopCount(destination: Node) = this.hopCount(destination, noVisitedNodes).also {
@@ -29,5 +27,23 @@ class Node {
             ?: UNREACHABLE
     }
 
+    infix fun cost(destination: Node) = this.cost(destination, noVisitedNodes).also {
+        require(it != UNREACHABLE) { "Destination cannot be reached" }
+    }
+
+    internal fun cost(destination: Node, visitedNodes: List<Node>): Double {
+        if (this == destination) return 0.0
+        if (this in visitedNodes) return UNREACHABLE
+        return links
+            .minOfOrNull { link -> link.cost(destination, visitedNodes + this) }
+            ?: UNREACHABLE
+    }
+
     private val noVisitedNodes = emptyList<Node>()
+
+    infix fun cost(amount: Number) = LinkBuilder(amount.toDouble(), links)
+
+    class LinkBuilder internal constructor(private val cost: Double, private val links: MutableList<Link>) {
+        infix fun to(neighbor: Node) = neighbor.also { links.add(Link(cost, neighbor))}
+    }
 }
